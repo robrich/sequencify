@@ -1,7 +1,7 @@
-![status](https://secure.travis-ci.org/robrich/arranger.png?branch=master)
+![status](https://secure.travis-ci.org/robrich/sequencify.png?branch=master)
 
-Arranger
-========
+Sequencify
+==========
 
 A module for sequencing tasks and dependencies
 
@@ -9,7 +9,7 @@ Usage
 -----
 
 ```javascript
-var sequence = require('arranger');
+var sequencify = require('sequencify');
 
 var items = {
   a: {
@@ -35,7 +35,7 @@ var names = ['d', 'b', 'c', 'a']; // The names of the items you want arranged, n
 
 var results = [];
 
-sequence(items, names, results);
+sequencify(items, names, results);
 
 console.log(results);
 // ['a','b','c','d'];

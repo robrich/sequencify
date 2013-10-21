@@ -1,9 +1,9 @@
 {
-  "name": "arranger",
+  "name": "sequencify",
   "description": "A module for sequencing tasks and dependencies",
-  "version": "0.0.4",
-  "homepage": "https://github.com/robrich/arranger",
-  "repository": "git://github.com/robrich/arranger.git",
+  "version": "0.0.5",
+  "homepage": "https://github.com/robrich/sequencify",
+  "repository": "git://github.com/robrich/sequencify.git",
   "author": "Rob Richardson (http://robrich.org/)",
   "main": "./index.js",
   "keywords": [
@@ -25,7 +25,7 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "http://github.com/robrich/arranger/raw/master/LICENSE"
+      "url": "http://github.com/robrich/sequencify/raw/master/LICENSE"
     }
   ]
 }
