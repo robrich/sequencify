@@ -22,7 +22,16 @@ var sequence = function (tasks, names, results, nest) {
 				throw e;
 			}
 			if (nest.indexOf(name) > -1) {
-				throw new Error('Recursive dependencies detected: '+nest.join(' -> ')+' -> '+name);
+				nest.push(name);
+				e = new Error('Recursive dependencies detected: '+nest.join(' -> '));
+				e.recursiveTasks = nest;
+				e.taskList = [];
+				for (j in tasks) {
+					if (tasks.hasOwnProperty(j)) {
+						e.taskList.push(tasks[j].name);
+					}
+				}
+				throw e;
 			}
 			if (node.dep.length) {
 				nest.push(name);

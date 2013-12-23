@@ -78,24 +78,44 @@ describe('task sequencing', function() {
 			theTest('b,d', 'a,b,c,d');
 		});
 		it('e -> throw', function() {
-			var failed = false;
+			var failed = false, i;
+			var expectedRecursionList = ['e','f','e'];
+			var expectedTaskList = ['a','b','c','d','e','f','g'];
 			try {
 				theTest('e', 'throw');
 				failed = true;
 			} catch (err) {
 				should.exist(err);
 				err.message.should.match(/recursive/i, err.message+' should include recursive');
+				err.recursiveTasks.length.should.equal(expectedRecursionList.length);
+				for (i = 0; i < expectedRecursionList.length; i++) {
+					err.recursiveTasks[i].should.equal(expectedRecursionList[i]);
+				}
+				err.taskList.length.should.equal(expectedTaskList.length);
+				expectedTaskList.forEach(function (item) {
+					err.taskList.should.include(item);
+				});
 			}
 			failed.should.equal(false);
 		});
 		it('g -> throw', function() {
-			var failed = false;
+			var failed = false, i;
+			var expectedRecursionList = ['g','g'];
+			var expectedTaskList = ['a','b','c','d','e','f','g'];
 			try {
 				theTest('g', 'throw');
 				failed = true;
 			} catch (err) {
 				should.exist(err);
 				err.message.should.match(/recursive/i, err.message+' should include recursive');
+				err.recursiveTasks.length.should.equal(expectedRecursionList.length);
+				for (i = 0; i < expectedRecursionList.length; i++) {
+					err.recursiveTasks[i].should.equal(expectedRecursionList[i]);
+				}
+				err.taskList.length.should.equal(expectedTaskList.length);
+				expectedTaskList.forEach(function (item) {
+					err.taskList.should.include(item);
+				});
 			}
 			failed.should.equal(false);
 		});
