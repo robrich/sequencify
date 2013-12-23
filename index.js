@@ -3,14 +3,23 @@
 "use strict";
 
 var sequence = function (tasks, names, results, nest) {
-	var i, name, node;
+	var i, name, node, e, j;
 	nest = nest || [];
 	for (i = 0; i < names.length; i++) {
 		name = names[i];
+		// de-dup results
 		if (results.indexOf(name) === -1) {
 			node = tasks[name];
 			if (!node) {
-				throw new Error(name+' is not defined');
+				e = new Error('task "'+name+'" is not defined');
+				e.missingTask = name;
+				e.taskList = [];
+				for (j in tasks) {
+					if (tasks.hasOwnProperty(j)) {
+						e.taskList.push(tasks[j].name);
+					}
+				}
+				throw e;
 			}
 			if (nest.indexOf(name) > -1) {
 				throw new Error('Recursive dependencies detected: '+nest.join(' -> ')+' -> '+name);
@@ -23,7 +32,6 @@ var sequence = function (tasks, names, results, nest) {
 			results.push(name);
 		}
 	}
-	// TODO: de-dup results?
 };
 
 module.exports = sequence;

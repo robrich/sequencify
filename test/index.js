@@ -99,6 +99,23 @@ describe('task sequencing', function() {
 			}
 			failed.should.equal(false);
 		});
+		it('h -> throw', function() {
+			var failed = false;
+			var expectedTaskList = ['a','b','c','d','e','f','g'];
+			try {
+				theTest('h', 'throw');
+				failed = true;
+			} catch (err) {
+				should.exist(err);
+				err.message.should.match(/not defined/i, err.message+' should include not defined');
+				err.missingTask.should.equal('h');
+				err.taskList.length.should.equal(expectedTaskList.length);
+				expectedTaskList.forEach(function (item) {
+					err.taskList.should.include(item);
+				});
+			}
+			failed.should.equal(false);
+		});
 
 	});
 });
