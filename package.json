@@ -1,7 +1,7 @@
 {
   "name": "sequencify",
   "description": "A module for sequencing tasks and dependencies",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "homepage": "https://github.com/robrich/sequencify",
   "repository": "git://github.com/robrich/sequencify.git",
   "author": "Rob Richardson (http://robrich.org/)",
@@ -13,8 +13,8 @@
     "compose"
   ],
   "devDependencies": {
-    "mocha": "~1.13.0",
-    "should": "~2.0.1"
+    "mocha": "~1.16.1",
+    "should": "~2.1.1"
   },
   "scripts": {
     "test": "mocha"
