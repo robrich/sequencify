@@ -29,16 +29,23 @@ var items = {
     name: 'd',
     dep: ['c']
   },
+  e: {
+    name: 'e',
+    // mustRunAfter defines a non-dependent task-ordering
+    // e will always run after d, but d will not
+    // automatically run just because e is run.
+    mustRunAfter: ['d']
+  }
 };
 
-var names = ['d', 'b', 'c', 'a']; // The names of the items you want arranged, need not be all
+var names = ['d', 'e', 'b', 'c', 'a']; // The names of the items you want arranged, need not be all
 
 var results = [];
 
 sequencify(items, names, results);
 
 console.log(results);
-// ['a','b','c','d'];
+// ['a','b','c','d','e'];
 ```
 
 LICENSE

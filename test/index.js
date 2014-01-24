@@ -17,7 +17,10 @@ describe('task sequencing', function() {
 			d: ['b','c'],
 			e: ['f'],
 			f: ['e'],
-			g: ['g']
+			g: ['g'],
+			i: { mustRunAfter: ['c'] },
+			j: { mustRunAfter: ['a'], deps: ['i'] },
+			k: { mustRunAfter: ['k']}
 		};
 		var noop = function () {};
 
@@ -25,9 +28,13 @@ describe('task sequencing', function() {
 			var tasks = {}, p;
 			for (p in tree) {
 				if (tree.hasOwnProperty(p)) {
+					if(Array.isArray(tree[p])) {
+						tree[p] = { deps:tree[p] };
+					}
 					tasks[p] = {
 						name: p,
-						dep: tree[p],
+						dep: tree[p].deps || [],
+						mustRunAfter: tree[p].mustRunAfter,
 						fn: noop
 					};
 				}
@@ -77,10 +84,22 @@ describe('task sequencing', function() {
 		it('b,d -> a,b,c,d', function() {
 			theTest('b,d', 'a,b,c,d');
 		});
+		it('i -> i', function() {
+			theTest('i', 'i');
+		});
+		it('j -> i,j', function() {
+			theTest('j', 'i,j');
+		});
+		it('i,d -> a,c,i,b,d', function() {
+			theTest('i,d', 'a,c,i,b,d');
+		});
+		it('j,a -> i,a,j', function() {
+			theTest('j,a', 'i,a,j');
+		});
 		it('e -> throw', function() {
 			var failed = false, i;
 			var expectedRecursionList = ['e','f','e'];
-			var expectedTaskList = ['a','b','c','d','e','f','g'];
+			var expectedTaskList = ['a','b','c','d','e','f','g','i','j','k'];
 			try {
 				theTest('e', 'throw');
 				failed = true;
@@ -101,7 +120,7 @@ describe('task sequencing', function() {
 		it('g -> throw', function() {
 			var failed = false, i;
 			var expectedRecursionList = ['g','g'];
-			var expectedTaskList = ['a','b','c','d','e','f','g'];
+			var expectedTaskList = ['a','b','c','d','e','f','g','i','j','k'];
 			try {
 				theTest('g', 'throw');
 				failed = true;
@@ -121,7 +140,7 @@ describe('task sequencing', function() {
 		});
 		it('h -> throw', function() {
 			var failed = false;
-			var expectedTaskList = ['a','b','c','d','e','f','g'];
+			var expectedTaskList = ['a','b','c','d','e','f','g','i','j','k'];
 			try {
 				theTest('h', 'throw');
 				failed = true;
@@ -129,6 +148,27 @@ describe('task sequencing', function() {
 				should.exist(err);
 				err.message.should.match(/not defined/i, err.message+' should include not defined');
 				err.missingTask.should.equal('h');
+				err.taskList.length.should.equal(expectedTaskList.length);
+				expectedTaskList.forEach(function (item) {
+					err.taskList.should.include(item);
+				});
+			}
+			failed.should.equal(false);
+		});
+		it('k -> throw', function() {
+			var failed = false, i;
+			var expectedRecursionList = ['k','k'];
+			var expectedTaskList = ['a','b','c','d','e','f','g','i','j','k'];
+			try {
+				theTest('k', 'throw');
+				failed = true;
+			} catch (err) {
+				should.exist(err);
+				err.message.should.match(/recursive/i, err.message+' should include recursive');
+				err.recursiveTasks.length.should.equal(expectedRecursionList.length);
+				for (i = 0; i < expectedRecursionList.length; i++) {
+					err.recursiveTasks[i].should.equal(expectedRecursionList[i]);
+				}
 				err.taskList.length.should.equal(expectedTaskList.length);
 				expectedTaskList.forEach(function (item) {
 					err.taskList.should.include(item);
