@@ -33,11 +33,9 @@ var items = {
 
 var names = ['d', 'b', 'c', 'a']; // The names of the items you want arranged, need not be all
 
-var results = [];
+var results = sequencify(items, names);
 
-sequencify(items, names, results);
-
-console.log(results);
+console.log(results.sequence);
 // ['a','b','c','d'];
 ```
 

@@ -1,14 +1,13 @@
-/*jshint node:true */
 /*global describe:false, it:false */
 
-"use strict";
+'use strict';
 
-var sequence = require('../');
+var sequencify = require('../');
 var should = require('should');
 require('mocha');
 
 describe('task sequencing', function() {
-	describe('sequence()', function() {
+	describe('sequencify()', function() {
 
 		var dependencyTree = {
 			a: [],
@@ -36,15 +35,27 @@ describe('task sequencing', function() {
 		};
 
 		var theTest = function (source,expected) {
-			// Arrange
+			// arrange
 			var tasks = makeTasks(dependencyTree);
-			var actual = [];
 
-			// Act
-			sequence(tasks, source.split(','), actual);
+			// act
+			var actual = sequencify(tasks, source.split(','));
 
-			// Assert
-			actual.join(',').should.equal(expected);
+			// assert
+			actual.sequence.join(',').should.equal(expected);
+			actual.missingTasks.length.should.equal(0);
+			actual.recursiveDependencies.length.should.equal(0);
+		};
+
+		var theTestError = function (source) {
+			// arrange
+			var tasks = makeTasks(dependencyTree);
+
+			// act
+			var actual = sequencify(tasks, source.split(','));
+
+			// assert done by caller
+			return actual;
 		};
 
 		it('a -> a', function() {
@@ -77,64 +88,45 @@ describe('task sequencing', function() {
 		it('b,d -> a,b,c,d', function() {
 			theTest('b,d', 'a,b,c,d');
 		});
-		it('e -> throw', function() {
-			var failed = false, i;
+		it('e -> recursive', function() {
+			// arrange
+			var i;
 			var expectedRecursionList = ['e','f','e'];
-			var expectedTaskList = ['a','b','c','d','e','f','g'];
-			try {
-				theTest('e', 'throw');
-				failed = true;
-			} catch (err) {
-				should.exist(err);
-				err.message.should.match(/recursive/i, err.message+' should include recursive');
-				err.recursiveTasks.length.should.equal(expectedRecursionList.length);
-				for (i = 0; i < expectedRecursionList.length; i++) {
-					err.recursiveTasks[i].should.equal(expectedRecursionList[i]);
-				}
-				err.taskList.length.should.equal(expectedTaskList.length);
-				expectedTaskList.forEach(function (item) {
-					err.taskList.should.include(item);
-				});
+
+			// act
+			var actual = theTestError('e');
+
+			// assert
+			actual.recursiveDependencies.length.should.equal(1);
+			actual.recursiveDependencies[0].length.should.equal(expectedRecursionList.length);
+			for (i = 0; i < expectedRecursionList.length; i++) {
+				actual.recursiveDependencies[0][i].should.equal(expectedRecursionList[i]);
 			}
-			failed.should.equal(false);
 		});
-		it('g -> throw', function() {
-			var failed = false, i;
+		it('g -> recursive', function() {
+			// arrange
+			var i;
 			var expectedRecursionList = ['g','g'];
-			var expectedTaskList = ['a','b','c','d','e','f','g'];
-			try {
-				theTest('g', 'throw');
-				failed = true;
-			} catch (err) {
-				should.exist(err);
-				err.message.should.match(/recursive/i, err.message+' should include recursive');
-				err.recursiveTasks.length.should.equal(expectedRecursionList.length);
-				for (i = 0; i < expectedRecursionList.length; i++) {
-					err.recursiveTasks[i].should.equal(expectedRecursionList[i]);
-				}
-				err.taskList.length.should.equal(expectedTaskList.length);
-				expectedTaskList.forEach(function (item) {
-					err.taskList.should.include(item);
-				});
+			
+			// act
+			var actual = theTestError('g');
+			
+			// assert
+			actual.recursiveDependencies.length.should.equal(1);
+			actual.recursiveDependencies[0].length.should.equal(expectedRecursionList.length);
+			for (i = 0; i < expectedRecursionList.length; i++) {
+				actual.recursiveDependencies[0][i].should.equal(expectedRecursionList[i]);
 			}
-			failed.should.equal(false);
 		});
-		it('h -> throw', function() {
-			var failed = false;
-			var expectedTaskList = ['a','b','c','d','e','f','g'];
-			try {
-				theTest('h', 'throw');
-				failed = true;
-			} catch (err) {
-				should.exist(err);
-				err.message.should.match(/not defined/i, err.message+' should include not defined');
-				err.missingTask.should.equal('h');
-				err.taskList.length.should.equal(expectedTaskList.length);
-				expectedTaskList.forEach(function (item) {
-					err.taskList.should.include(item);
-				});
-			}
-			failed.should.equal(false);
+		it('h -> missing', function() {
+			// arrange
+
+			// act
+			var actual = theTestError('h');
+
+			// assert
+			actual.missingTasks.length.should.equal(1);
+			actual.missingTasks[0].should.equal('h');
 		});
 
 	});
