@@ -36,7 +36,7 @@ var names = ['d', 'b', 'c', 'a']; // The names of the items you want arranged, n
 var results = sequencify(items, names);
 
 console.log(results.sequence);
-// ['a','b','c','d'];
+// [ 'a', 'c', 'd', 'b' ];
 ```
 
 LICENSE
