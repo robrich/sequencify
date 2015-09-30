@@ -3,7 +3,7 @@
 'use strict';
 
 var sequencify = require('../');
-var should = require('should');
+require('should');
 require('mocha');
 
 describe('task sequencing', function() {
@@ -107,10 +107,10 @@ describe('task sequencing', function() {
 			// arrange
 			var i;
 			var expectedRecursionList = ['g','g'];
-			
+
 			// act
 			var actual = theTestError('g');
-			
+
 			// assert
 			actual.recursiveDependencies.length.should.equal(1);
 			actual.recursiveDependencies[0].length.should.equal(expectedRecursionList.length);
