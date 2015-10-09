@@ -28,7 +28,7 @@ var items = {
   d: {
     name: 'd',
     dep: ['c']
-  },
+  }
 };
 
 var names = ['d', 'b', 'c', 'a']; // The names of the items you want arranged, need not be all
