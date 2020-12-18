@@ -1,14 +1,10 @@
-language: node_js
 arch:
   - amd64
   - ppc64le
+language: node_js
 node_js:
-  - "0.10"
-  - "0.12"
+  - "10"
+  - "12"
+  - "14"
+  - "15"
   - "stable"
-jobs:
-  exclude:
-      - nodejs: 0.10
-        arch: ppc64le
-      - nodejs: 0.12
-        arch: ppc64le
